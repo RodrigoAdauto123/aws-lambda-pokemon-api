@@ -1,18 +1,20 @@
 
 const {httpGet}  = require("./helpers/http");
-const {generateURL} = require("./helpers/validate");
+const {generateURL, transformURL} = require("./helpers/validate");
 const response = require("./helpers/response");
 
 module.exports.handler = async (event) => {
 
    try{
-       let apigatewayUrl = 'https://' + process.env.APIGATEWAY_NAME_SWAPI + '/';
+       let apigatewayUrl = 'https://' + event['headers']['Host'] + '/' + event['requestContext']['stage'] + '/' + process.env.APIGATEWAY_NAME_POKEMON + '/';
+       console.log(apigatewayUrl);
+       console.log(event);
        let urlPoke = generateURL(event);
        let apiData = await httpGet(urlPoke,"no existe el recurso");
-      // let parseApiData = JSON.parse(apiData);
+       let transformData = transformURL(apiData,apigatewayUrl);
+       
     
-       //return response(200, apiData);
-       return apiData;
+       return response(200, apiData);
     } catch(error){
         console.log(error.message);
         console.log(error.stack);
